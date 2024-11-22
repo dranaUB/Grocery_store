@@ -1,5 +1,5 @@
 // Define your api here
-var baseApiUrl = 'https://ubgroceryportal-bcf9fac0hzdvhud8.canadacentral-01.azurewebsites.net/'; // Replace with your actual Azure App Service URL
+var baseApiUrl = 'https://ubgroceryportal-bcf9fac0hzdvhud8.canadacentral-01.azurewebsites.net'; // Replace with your actual Azure App Service URL
 var productListApiUrl = `${baseApiUrl}/getProducts`;
 var uomListApiUrl = `${baseApiUrl}/getUOM`;
 var productSaveApiUrl = `${baseApiUrl}/insertProduct`;

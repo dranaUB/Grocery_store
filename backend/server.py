@@ -70,7 +70,8 @@ def create_tables():
     finally:
         cursor.close()
         conn.close()
-
+        
+create_tables()
 @app.route('/getUOM', methods=['GET'])
 def get_uom():
     response = uom_dao.get_uoms(connection)

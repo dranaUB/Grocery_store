@@ -63,14 +63,15 @@ def create_tables():
             PRIMARY KEY (order_id, product_id)
         );
         """)
-        conn.commit()
+        connection.commit()
     except Exception as e:
         print(f"An error occurred: {e}")
-        conn.rollback()
+        connection.rollback()
     finally:
         cursor.close()
-        conn.close()
+        connection.close()
         
+connection = get_sql_connection()        
 create_tables()
 @app.route('/getUOM', methods=['GET'])
 def get_uom():

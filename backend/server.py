@@ -31,57 +31,32 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 connection = get_sql_connection()
 
-def create_tables():
-    connection = get_sql_connection()  # Ensure you have a function to get the connection
-    cursor = connection.cursor()
-    try:
-        cursor.execute("""
-        -- Drop tables if they exist, starting from those with dependencies
-        DROP TABLE IF EXISTS order_details CASCADE;
-        DROP TABLE IF EXISTS orders CASCADE;
-        DROP TABLE IF EXISTS products CASCADE;
-        DROP TABLE IF EXISTS uom CASCADE;
 
-        -- Create the 'uom' table first as it's referenced by 'products'
-        CREATE TABLE uom (
-            uom_id SERIAL PRIMARY KEY,
-            uom_name VARCHAR(45) NOT NULL
-        );
+class UOM(db.Model):
+    __tablename__ = 'uom'
+    uom_id = db.Column(db.Integer, primary_key=True)
+    uom_name = db.Column(db.String(45), nullable=False)
 
-        -- Create the 'products' table, referencing 'uom'
-        CREATE TABLE products (
-            product_id SERIAL PRIMARY KEY,
-            name VARCHAR(100) NOT NULL,
-            uom_id INT NOT NULL REFERENCES uom(uom_id),
-            price_per_unit DOUBLE PRECISION NOT NULL
-        );
+class Product(db.Model):
+    __tablename__ = 'products'
+    product_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    uom_id = db.Column(db.Integer, db.ForeignKey('uom.uom_id'), nullable=False)
+    price_per_unit = db.Column(db.Float, nullable=False)
 
-        -- Create the 'orders' table
-        CREATE TABLE orders (
-            order_id SERIAL PRIMARY KEY,
-            customer_name VARCHAR(100) NOT NULL,
-            total DOUBLE PRECISION NOT NULL,
-            datetime TIMESTAMP NOT NULL
-        );
+class Order(db.Model):
+    __tablename__ = 'orders'
+    order_id = db.Column(db.Integer, primary_key=True)
+    customer_name = db.Column(db.String(100), nullable=False)
+    total = db.Column(db.Float, nullable=False)
+    datetime = db.Column(db.DateTime, nullable=False)
 
-        -- Create the 'order_details' table, referencing 'orders' and 'products'
-        CREATE TABLE order_details (
-            order_id INT NOT NULL REFERENCES orders(order_id),
-            product_id INT NOT NULL REFERENCES products(product_id),
-            quantity DOUBLE PRECISION NOT NULL,
-            total_price DOUBLE PRECISION NOT NULL,
-            PRIMARY KEY (order_id, product_id)
-        );
-        """)
-        connection.commit()
-        print("Tables created successfully.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        connection.rollback()
-    finally:
-        cursor.close()
-        connection.close()
-
+class OrderDetail(db.Model):
+    __tablename__ = 'order_details'
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.order_id'), primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.product_id'), primary_key=True)
+    quantity = db.Column(db.Float, nullable=False)
+    total_price = db.Column(db.Float, nullable=False)
 connection = get_sql_connection()        
 create_tables()
 @app.route('/getUOM', methods=['GET'])
@@ -136,6 +111,6 @@ def delete_product():
 
 if __name__ == "__main__":
     print("Starting Python Flask Server For Grocery Store Management System")
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    
+    app.run()
     

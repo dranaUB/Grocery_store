@@ -31,23 +31,32 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 connection = get_sql_connection()
 
-
 def create_tables():
+    connection = get_sql_connection()  # Ensure you have a function to get the connection
     cursor = connection.cursor()
     try:
         cursor.execute("""
-        CREATE TABLE products (
-            product_id SERIAL PRIMARY KEY,
-            name VARCHAR(100) NOT NULL,
-            uom_id INT NOT NULL,
-            price_per_unit DOUBLE PRECISION NOT NULL
-        );
+        -- Drop tables if they exist, starting from those with dependencies
+        DROP TABLE IF EXISTS order_details CASCADE;
+        DROP TABLE IF EXISTS orders CASCADE;
+        DROP TABLE IF EXISTS products CASCADE;
+        DROP TABLE IF EXISTS uom CASCADE;
 
+        -- Create the 'uom' table first as it's referenced by 'products'
         CREATE TABLE uom (
             uom_id SERIAL PRIMARY KEY,
             uom_name VARCHAR(45) NOT NULL
         );
 
+        -- Create the 'products' table, referencing 'uom'
+        CREATE TABLE products (
+            product_id SERIAL PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            uom_id INT NOT NULL REFERENCES uom(uom_id),
+            price_per_unit DOUBLE PRECISION NOT NULL
+        );
+
+        -- Create the 'orders' table
         CREATE TABLE orders (
             order_id SERIAL PRIMARY KEY,
             customer_name VARCHAR(100) NOT NULL,
@@ -55,22 +64,24 @@ def create_tables():
             datetime TIMESTAMP NOT NULL
         );
 
+        -- Create the 'order_details' table, referencing 'orders' and 'products'
         CREATE TABLE order_details (
-            order_id INT NOT NULL,
-            product_id INT NOT NULL,
+            order_id INT NOT NULL REFERENCES orders(order_id),
+            product_id INT NOT NULL REFERENCES products(product_id),
             quantity DOUBLE PRECISION NOT NULL,
             total_price DOUBLE PRECISION NOT NULL,
             PRIMARY KEY (order_id, product_id)
         );
         """)
         connection.commit()
+        print("Tables created successfully.")
     except Exception as e:
         print(f"An error occurred: {e}")
         connection.rollback()
     finally:
         cursor.close()
         connection.close()
-        
+
 connection = get_sql_connection()        
 create_tables()
 @app.route('/getUOM', methods=['GET'])

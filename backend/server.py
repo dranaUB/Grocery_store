@@ -7,6 +7,10 @@ import orders_dao
 import uom_dao
 import os
 
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+
+
 # Configure Postgres database based on connection string of the libpq Keyword/Value form
 # https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
 conn_str = os.environ['AZURE_POSTGRESQL_CONNECTIONSTRING']

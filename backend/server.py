@@ -29,11 +29,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-conn = get_sql_connection()
+connection = get_sql_connection()
 
 
 def create_tables():
-    cursor = conn.cursor()
+    cursor = connection.cursor()
     try:
         cursor.execute("""
         CREATE TABLE products (

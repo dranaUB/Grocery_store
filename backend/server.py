@@ -58,7 +58,7 @@ class OrderDetail(db.Model):
     quantity = db.Column(db.Float, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
 connection = get_sql_connection()        
-create_tables()
+
 @app.route('/getUOM', methods=['GET'])
 def get_uom():
     response = uom_dao.get_uoms(connection)

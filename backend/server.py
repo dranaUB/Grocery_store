@@ -62,5 +62,5 @@ def delete_product():
 
 if __name__ == "__main__":
     print("Starting Python Flask Server For Grocery Store Management System")
-    app.run(port=5000)
+    app.run()
 

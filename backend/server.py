@@ -29,7 +29,47 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-connection = get_sql_connection()
+conn = get_sql_connection()
+
+
+def create_tables():
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+        CREATE TABLE products (
+            product_id SERIAL PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            uom_id INT NOT NULL,
+            price_per_unit DOUBLE PRECISION NOT NULL
+        );
+
+        CREATE TABLE uom (
+            uom_id SERIAL PRIMARY KEY,
+            uom_name VARCHAR(45) NOT NULL
+        );
+
+        CREATE TABLE orders (
+            order_id SERIAL PRIMARY KEY,
+            customer_name VARCHAR(100) NOT NULL,
+            total DOUBLE PRECISION NOT NULL,
+            datetime TIMESTAMP NOT NULL
+        );
+
+        CREATE TABLE order_details (
+            order_id INT NOT NULL,
+            product_id INT NOT NULL,
+            quantity DOUBLE PRECISION NOT NULL,
+            total_price DOUBLE PRECISION NOT NULL,
+            PRIMARY KEY (order_id, product_id)
+        );
+        """)
+        conn.commit()
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        conn.close()
 
 @app.route('/getUOM', methods=['GET'])
 def get_uom():

@@ -1,5 +1,4 @@
 from datetime import datetime
-from sql_connection import get_sql_connection
 
 from app import db
 connection = db.session()    

@@ -1,4 +1,4 @@
-from sql_connection import get_sql_connection
+
 from models import UOM,Product,Order,OrderDetail
 
 from app import db

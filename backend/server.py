@@ -11,11 +11,6 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
 
-# Configure Postgres database based on connection string of the libpq Keyword/Value form
-# https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
-conn_str = os.environ['AZURE_POSTGRESQL_CONNECTIONSTRING']
-conn_str_params = {pair.split('=')[0]: pair.split('=')[1] for pair in conn_str.split(' ')}
-
 DATABASE_URI = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.format(
     dbuser=conn_str_params['user'],
     dbpass=conn_str_params['password'],
@@ -23,13 +18,19 @@ DATABASE_URI = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.forma
     dbname=conn_str_params['dbname']
 )
 
+
 app = Flask(__name__)
+app.config.update(
+    SQLALCHEMY_DATABASE_URI=DATABASE_URI,
+    SQLALCHEMY_TRACK_MODIFICATIONS=False,
+)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
-
+# initialize the database connection
 db = SQLAlchemy(app)
+
+# initialize database migration management
 migrate = Migrate(app, db)
-connection = get_sql_connection()
+
 
 
 class UOM(db.Model):
@@ -57,7 +58,8 @@ class OrderDetail(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('products.product_id'), primary_key=True)
     quantity = db.Column(db.Float, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
-connection = get_sql_connection()        
+    
+connection = db.session()      
 
 @app.route('/getUOM', methods=['GET'])
 def get_uom():

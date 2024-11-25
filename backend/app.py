@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-from sql_connection import get_sql_connection
 import json
 
 import products_dao
@@ -11,17 +10,18 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
 
-DATABASE_URI = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.format(
-    dbuser=conn_str_params['user'],
-    dbpass=conn_str_params['password'],
-    dbhost=conn_str_params['host'],
-    dbname=conn_str_params['dbname']
+database_uri = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.format(
+    dbuser=os.environ['DBUSER'],
+    dbpass=os.environ['DBPASS'],
+    dbhost=os.environ['DBHOST'],
+    dbname=os.environ['DBNAME']
 )
+
 
 
 app = Flask(__name__)
 app.config.update(
-    SQLALCHEMY_DATABASE_URI=DATABASE_URI,
+    SQLALCHEMY_DATABASE_URI=database_uri,
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
 )
 
@@ -30,8 +30,6 @@ db = SQLAlchemy(app)
 
 # initialize database migration management
 migrate = Migrate(app, db)
-
-
 
 connection = db.session()      
 

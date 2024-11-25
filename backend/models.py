@@ -1,3 +1,5 @@
+from app import db
+
 
 class UOM(db.Model):
     __tablename__ = 'uom'

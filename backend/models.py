@@ -1,5 +1,6 @@
-from app import db
+from flask_sqlalchemy import SQLAlchemy
 
+db = SQLAlchemy()
 
 class UOM(db.Model):
     __tablename__ = 'uom'

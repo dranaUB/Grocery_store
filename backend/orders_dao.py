@@ -1,8 +1,12 @@
 from datetime import datetime
 
-from app import db
-connection = db.session()    
+
+
 from models import UOM,Product,Order,OrderDetail
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+connection = db.session()  
 
 
 def insert_order(connection, order):

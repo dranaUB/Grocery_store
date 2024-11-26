@@ -1,5 +1,6 @@
 from models import UOM,Product,Order,OrderDetail
-from app import db
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
 connection = db.session()
 
 def get_uoms(connection):

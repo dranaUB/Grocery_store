@@ -1,7 +1,8 @@
 
 from models import UOM,Product,Order,OrderDetail
+from flask_sqlalchemy import SQLAlchemy
 
-from app import db
+db = SQLAlchemy()
 connection = db.session()  
 
 def get_all_products(connection):
